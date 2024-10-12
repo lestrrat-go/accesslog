@@ -11,9 +11,20 @@ import (
 // written to the client
 type ResponseWriter interface {
 	http.ResponseWriter
+
+	// BytesWritten returns the number of bytes written to the client
 	BytesWritten() int64
+
+	// Status returns the HTTP status code that is being written to the client
 	Status() int
+
+	// StartTime returns the time when the downstream handler started processing
 	StartTime() time.Time
+
+	// EndTime returns the time when the downstream handler finished processing
+	// Calling this method before `End()` returns the zero time
+	EndTime() time.Time
+
 	// End is called when the downsteam handler has finished processing.
 	End()
 }
@@ -26,6 +37,7 @@ type ResponseWriterBuilder interface {
 	Wrap(http.ResponseWriter, *http.Request, bool) ResponseWriter
 }
 
+// DefaultResponseWriterBuilder returns the default ResponseWriterBuilder
 func DefaultResponseWriterBuilder() ResponseWriterBuilder {
 	return defaultResponseWriterBuilder{}
 }
